@@ -21,70 +21,213 @@ class Hero3D {
     });
     this.renderer.setSize(500, 500);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.2;
     this.container.appendChild(this.renderer.domElement);
     
-    // Create helmet geometry (more detailed)
+    // Create realistic F1 helmet
     const helmetGroup = new THREE.Group();
     
-    // Main helmet body
-    const geometry = new THREE.SphereGeometry(1.5, 64, 64);
-    const material = new THREE.MeshStandardMaterial({
+    // ===== MAIN SHELL - LatheGeometry with F1 profile =====
+    const shellPoints = [];
+    
+    // Create smooth F1 helmet profile (Arai GP-7 style)
+    // Bottom to top, starting from neck
+    shellPoints.push(new THREE.Vector2(0.15, -1.2));    // Neck opening
+    shellPoints.push(new THREE.Vector2(0.35, -1.0));    // Neck curve
+    shellPoints.push(new THREE.Vector2(0.55, -0.7));    // Chin guard start
+    shellPoints.push(new THREE.Vector2(0.65, -0.4));    // Chin guard curve
+    shellPoints.push(new THREE.Vector2(0.68, -0.1));    // Jaw area
+    shellPoints.push(new THREE.Vector2(0.70, 0.15));    // Visor opening bottom
+    shellPoints.push(new THREE.Vector2(0.72, 0.35));    // Visor opening mid
+    shellPoints.push(new THREE.Vector2(0.70, 0.55));    // Visor opening top
+    shellPoints.push(new THREE.Vector2(0.68, 0.75));    // Forehead curve
+    shellPoints.push(new THREE.Vector2(0.65, 0.95));    // Crown start
+    shellPoints.push(new THREE.Vector2(0.58, 1.15));    // Top of helmet
+    shellPoints.push(new THREE.Vector2(0.50, 1.25));    // Peak
+    shellPoints.push(new THREE.Vector2(0.40, 1.28));    // Back slope start
+    shellPoints.push(new THREE.Vector2(0.30, 1.20));    // Back slope
+    shellPoints.push(new THREE.Vector2(0.20, 1.05));    // Back curve
+    shellPoints.push(new THREE.Vector2(0.10, 0.85));    // Back lower
+    shellPoints.push(new THREE.Vector2(0.05, 0.60));    // Back neck
+    shellPoints.push(new THREE.Vector2(0, 0.30));       // Close at neck
+    
+    const shellGeometry = new THREE.LatheGeometry(shellPoints, 64);
+    shellGeometry.computeVertexNormals();
+    
+    // Environment map for reflections
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+      format: THREE.RGBAFormat,
+      generateMipmaps: true,
+      minFilter: THREE.LinearMipmapLinearFilter
+    });
+    const cubeCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
+    this.scene.add(cubeCamera);
+    
+    // Premium shell material - McLaren neon yellow/green
+    const shellMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xCCFF00,
       metalness: 0.9,
-      roughness: 0.2,
-      emissive: 0xCCFF00,
-      emissiveIntensity: 0.4,
-      envMapIntensity: 1
-    });
-    
-    this.helmet = new THREE.Mesh(geometry, material);
-    helmetGroup.add(this.helmet);
-    
-    // Add visor (dark band)
-    const visorGeometry = new THREE.TorusGeometry(1.5, 0.2, 16, 100);
-    const visorMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0A0A0A,
-      metalness: 1.0,
       roughness: 0.1,
-      emissive: 0x0A0A0A,
-      emissiveIntensity: 0.1
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+      envMapIntensity: 2.0,
+      reflectivity: 1.0,
+      envMap: cubeRenderTarget.texture
     });
+    
+    const shell = new THREE.Mesh(shellGeometry, shellMaterial);
+    shell.castShadow = true;
+    shell.receiveShadow = true;
+    helmetGroup.add(shell);
+    
+    // ===== VISOR - Curved with transmission =====
+    const visorCurve = new THREE.EllipseCurve(
+      0, 0,           // center x, y
+      0.72, 0.25,     // xRadius, yRadius
+      0, Math.PI,     // start angle, end angle
+      false,          // clockwise
+      0               // rotation
+    );
+    
+    const visorPoints = visorCurve.getPoints(50);
+    const visorShape = new THREE.Shape(visorPoints);
+    
+    const visorGeometry = new THREE.ExtrudeGeometry(visorShape, {
+      depth: 0.02,
+      bevelEnabled: true,
+      bevelThickness: 0.01,
+      bevelSize: 0.01,
+      bevelSegments: 3
+    });
+    
+    const visorMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x0A0A0A,
+      metalness: 0.5,
+      roughness: 0.05,
+      transmission: 0.6,
+      transparent: true,
+      opacity: 0.8,
+      thickness: 0.5,
+      ior: 1.5,
+      iridescence: 0.7,
+      iridescenceIOR: 1.3,
+      clearcoat: 1.0
+    });
+    
     const visor = new THREE.Mesh(visorGeometry, visorMaterial);
-    visor.rotation.x = Math.PI / 2;
+    visor.position.set(-0.36, 0.35, 0.68);
+    visor.rotation.y = Math.PI / 2;
     helmetGroup.add(visor);
     
-    // Add detail rings
+    // ===== AIR VENTS - Top of helmet =====
+    const ventGeometry = new THREE.BoxGeometry(0.15, 0.05, 0.3);
+    const ventMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x0A0A0A,
+      metalness: 0.8,
+      roughness: 0.3
+    });
+    
+    // Front vents
     for (let i = 0; i < 3; i++) {
-      const ringGeometry = new THREE.TorusGeometry(1.6 + i * 0.15, 0.03, 8, 64);
-      const ringMaterial = new THREE.MeshStandardMaterial({
-        color: i % 2 === 0 ? 0xFFFFFF : 0x0A0A0A,
-        metalness: 0.9,
-        roughness: 0.2
-      });
-      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.y = -0.2 - i * 0.3;
-      helmetGroup.add(ring);
+      const vent = new THREE.Mesh(ventGeometry, ventMaterial);
+      const angle = (i - 1) * 0.3;
+      const radius = 0.52;
+      vent.position.set(
+        Math.sin(angle) * radius,
+        1.15,
+        Math.cos(angle) * radius
+      );
+      vent.rotation.y = angle;
+      helmetGroup.add(vent);
     }
     
+    // ===== AERODYNAMIC SPOILER - Back fin =====
+    const spoilerShape = new THREE.Shape();
+    spoilerShape.moveTo(0, 0);
+    spoilerShape.lineTo(0.25, 0);
+    spoilerShape.lineTo(0.20, 0.15);
+    spoilerShape.lineTo(0.05, 0.15);
+    spoilerShape.closePath();
+    
+    const spoilerGeometry = new THREE.ExtrudeGeometry(spoilerShape, {
+      depth: 0.02,
+      bevelEnabled: false
+    });
+    
+    const spoilerMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xCCFF00,
+      metalness: 0.9,
+      roughness: 0.1,
+      clearcoat: 1.0
+    });
+    
+    const spoiler = new THREE.Mesh(spoilerGeometry, spoilerMaterial);
+    spoiler.position.set(-0.01, 1.05, -0.50);
+    spoiler.rotation.x = -Math.PI / 6;
+    helmetGroup.add(spoiler);
+    
+    // ===== CHIN GUARD DETAILS =====
+    const chinBarGeometry = new THREE.BoxGeometry(0.5, 0.08, 0.12);
+    const chinBarMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x0A0A0A,
+      metalness: 0.9,
+      roughness: 0.2
+    });
+    
+    const chinBar = new THREE.Mesh(chinBarGeometry, chinBarMaterial);
+    chinBar.position.set(0, -0.4, 0.60);
+    chinBar.rotation.x = Math.PI / 8;
+    helmetGroup.add(chinBar);
+    
+    // ===== PANEL LINES - Subtle details =====
+    const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x0A0A0A });
+    
+    for (let i = 0; i < 2; i++) {
+      const lineGeometry = new THREE.TorusGeometry(0.72 + i * 0.15, 0.005, 8, 64);
+      const line = new THREE.Mesh(lineGeometry, lineMaterial);
+      line.rotation.x = Math.PI / 2;
+      line.position.y = 0.5 - i * 0.4;
+      helmetGroup.add(line);
+    }
+    
+    // Add to scene
     this.scene.add(helmetGroup);
     this.helmetGroup = helmetGroup;
     
-    // Dramatic lighting
+    // ===== 3-POINT LIGHTING SYSTEM =====
+    // Key light (main)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    keyLight.position.set(5, 8, 5);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 2048;
+    keyLight.shadow.mapSize.height = 2048;
+    this.scene.add(keyLight);
+    
+    // Fill light (soften shadows)
+    const fillLight = new THREE.DirectionalLight(0xCCFF00, 0.8);
+    fillLight.position.set(-5, 3, 3);
+    this.scene.add(fillLight);
+    
+    // Rim light (edge highlight)
+    const rimLight = new THREE.DirectionalLight(0xFFFFFF, 1.2);
+    rimLight.position.set(0, 2, -8);
+    this.scene.add(rimLight);
+    
+    // Ambient base
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     this.scene.add(ambientLight);
     
-    const pointLight1 = new THREE.PointLight(0xCCFF00, 2, 100);
-    pointLight1.position.set(5, 5, 5);
-    this.scene.add(pointLight1);
+    // Accent point lights for glow
+    const accentLight1 = new THREE.PointLight(0xCCFF00, 1.5, 50);
+    accentLight1.position.set(3, 1, 4);
+    this.scene.add(accentLight1);
     
-    const pointLight2 = new THREE.PointLight(0xFFFFFF, 1.5, 100);
-    pointLight2.position.set(-5, -5, 5);
-    this.scene.add(pointLight2);
-    
-    const pointLight3 = new THREE.PointLight(0xCCFF00, 1, 100);
-    pointLight3.position.set(0, 0, -5);
-    this.scene.add(pointLight3);
+    const accentLight2 = new THREE.PointLight(0xFFFFFF, 1.0, 50);
+    accentLight2.position.set(-3, -1, 3);
+    this.scene.add(accentLight2);
     
     // Animation
     this.mouseX = 0;
@@ -132,6 +275,26 @@ class HelmetGallery {
     this.initHelmets();
   }
   
+  createHelmetGeometry() {
+    // Simplified but realistic F1 helmet profile for gallery
+    const points = [];
+    points.push(new THREE.Vector2(0.10, -0.80));    // Neck
+    points.push(new THREE.Vector2(0.30, -0.65));    // Chin
+    points.push(new THREE.Vector2(0.45, -0.30));    // Jaw
+    points.push(new THREE.Vector2(0.48, 0.10));     // Visor bottom
+    points.push(new THREE.Vector2(0.47, 0.40));     // Visor top
+    points.push(new THREE.Vector2(0.45, 0.65));     // Forehead
+    points.push(new THREE.Vector2(0.38, 0.85));     // Crown
+    points.push(new THREE.Vector2(0.28, 0.90));     // Top
+    points.push(new THREE.Vector2(0.18, 0.85));     // Back
+    points.push(new THREE.Vector2(0.08, 0.60));     // Back lower
+    points.push(new THREE.Vector2(0, 0.30));        // Close
+    
+    const geometry = new THREE.LatheGeometry(points, 48);
+    geometry.computeVertexNormals();
+    return geometry;
+  }
+  
   initHelmets() {
     const helmetItems = document.querySelectorAll('.helmet-item');
     
@@ -141,7 +304,7 @@ class HelmetGallery {
       
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-      camera.position.z = 3.5;
+      camera.position.z = 2.8;
       
       const renderer = new THREE.WebGLRenderer({ 
         alpha: true, 
@@ -150,12 +313,14 @@ class HelmetGallery {
       const size = 300;
       renderer.setSize(size, size);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
       container.appendChild(renderer.domElement);
       
-      // Create helmet with more detail
+      // Create helmet with realistic geometry
       const helmetGroup = new THREE.Group();
       
-      const geometry = new THREE.SphereGeometry(1, 64, 64);
+      const geometry = this.createHelmetGeometry();
       
       // Different colors for each year with metallic variations
       const colors = [
@@ -168,41 +333,87 @@ class HelmetGallery {
         0xFF8844  // 2019 - Gold sunset
       ];
       
-      const material = new THREE.MeshStandardMaterial({
+      const material = new THREE.MeshPhysicalMaterial({
         color: colors[index % colors.length],
         metalness: 0.9,
-        roughness: 0.15,
+        roughness: 0.12,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
         emissive: colors[index % colors.length],
-        emissiveIntensity: 0.4
+        emissiveIntensity: 0.3,
+        reflectivity: 1.0
       });
       
       const helmet = new THREE.Mesh(geometry, material);
       helmetGroup.add(helmet);
       
-      // Add visor
-      const visorGeom = new THREE.TorusGeometry(1.05, 0.08, 16, 100);
-      const visorMat = new THREE.MeshStandardMaterial({
-        color: 0x0A0A0A,
-        metalness: 1.0,
-        roughness: 0.05
+      // Add visor with iridescence
+      const visorCurve = new THREE.EllipseCurve(
+        0, 0,
+        0.48, 0.15,
+        0, Math.PI,
+        false, 0
+      );
+      
+      const visorPoints = visorCurve.getPoints(30);
+      const visorShape = new THREE.Shape(visorPoints);
+      const visorGeometry = new THREE.ExtrudeGeometry(visorShape, {
+        depth: 0.015,
+        bevelEnabled: true,
+        bevelThickness: 0.005,
+        bevelSize: 0.005
       });
-      const visor = new THREE.Mesh(visorGeom, visorMat);
-      visor.rotation.x = Math.PI / 2;
+      
+      const visorMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x0A0A0A,
+        metalness: 0.5,
+        roughness: 0.05,
+        transmission: 0.5,
+        transparent: true,
+        opacity: 0.85,
+        iridescence: 0.6,
+        iridescenceIOR: 1.3,
+        clearcoat: 1.0
+      });
+      
+      const visor = new THREE.Mesh(visorGeometry, visorMaterial);
+      visor.position.set(-0.24, 0.25, 0.45);
+      visor.rotation.y = Math.PI / 2;
       helmetGroup.add(visor);
+      
+      // Small detail vents
+      const ventGeometry = new THREE.BoxGeometry(0.08, 0.03, 0.15);
+      const ventMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x0A0A0A,
+        metalness: 0.8,
+        roughness: 0.3
+      });
+      
+      const vent = new THREE.Mesh(ventGeometry, ventMaterial);
+      vent.position.set(0, 0.75, 0.32);
+      helmetGroup.add(vent);
       
       scene.add(helmetGroup);
       
-      // Dramatic lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      // 3-point lighting
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      keyLight.position.set(3, 5, 3);
+      scene.add(keyLight);
+      
+      const fillLight = new THREE.DirectionalLight(colors[index % colors.length], 0.6);
+      fillLight.position.set(-3, 2, 2);
+      scene.add(fillLight);
+      
+      const rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      rimLight.position.set(0, 1, -5);
+      scene.add(rimLight);
+      
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       scene.add(ambientLight);
       
-      const pointLight = new THREE.PointLight(colors[index % colors.length], 2, 100);
-      pointLight.position.set(3, 3, 3);
-      scene.add(pointLight);
-      
-      const rimLight = new THREE.PointLight(0xffffff, 1, 100);
-      rimLight.position.set(-3, -3, 3);
-      scene.add(rimLight);
+      const accentLight = new THREE.PointLight(colors[index % colors.length], 1.2, 30);
+      accentLight.position.set(2, 1, 3);
+      scene.add(accentLight);
       
       this.helmets.push({ scene, camera, renderer, helmetGroup, item, index });
       
@@ -245,7 +456,7 @@ class HelmetGallery {
           helmetGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
         }
         
-        helmetGroup.position.y = Math.sin(Date.now() * 0.001 + index) * 0.1;
+        helmetGroup.position.y = Math.sin(Date.now() * 0.001 + index) * 0.08;
         
         renderer.render(scene, camera);
       };
