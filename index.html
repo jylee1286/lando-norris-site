@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lando Norris • F1 Driver</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">LN</div>
+      <nav class="nav">
+        <button class="hamburger" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <a href="#" class="store-btn">STORE</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg-patterns"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">REDEFINING<br>LIMITS</h1>
+        <p class="hero-subtitle">FIGHTING FOR WINS</p>
+      </div>
+      <div class="hero-image-wrapper">
+        <img src="/images/hero-portrait.png" alt="Lando Norris" class="hero-image" />
+      </div>
+    </div>
+    <div id="hero-3d" class="hero-3d"></div>
+  </section>
+
+  <!-- Next Race Module -->
+  <div class="next-race-module">
+    <div class="next-race-content">
+      <div class="next-race-label">NEXT RACE</div>
+      <div class="next-race-name">AUSTRALIAN GP</div>
+      <div class="next-race-location">MELBOURNE</div>
+      <svg class="track-outline" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 20 50 Q 40 20, 80 30 T 140 40 Q 160 45, 170 60 Q 175 70, 160 80 Q 140 90, 100 85 T 40 70 Q 25 65, 20 50 Z" 
+              fill="none" stroke="#CCFF00" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="mclaren-badge">MCLAREN F1<br>SINCE 2019</div>
+    </div>
+  </div>
+
+  <!-- On Track Section -->
+  <section class="section on-track">
+    <div class="container">
+      <h2 class="section-title">ON TRACK</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">2025 CHAMPIONSHIP</div>
+          <div class="stat-value">P2</div>
+          <div class="stat-detail">352 POINTS</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">CAREER WINS</div>
+          <div class="stat-value">8</div>
+          <div class="stat-detail">VICTORIES</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">PODIUMS</div>
+          <div class="stat-value">34</div>
+          <div class="stat-detail">TOP 3 FINISHES</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">POLE POSITIONS</div>
+          <div class="stat-value">12</div>
+          <div class="stat-detail">FRONT ROW STARTS</div>
+        </div>
+      </div>
+
+      <div class="race-results">
+        <h3 class="subsection-title">RECENT RESULTS</h3>
+        <div class="results-list">
+          <div class="result-item">
+            <span class="result-race">BAHRAIN GP</span>
+            <span class="result-position">P1</span>
+          </div>
+          <div class="result-item">
+            <span class="result-race">SAUDI ARABIAN GP</span>
+            <span class="result-position">P2</span>
+          </div>
+          <div class="result-item">
+            <span class="result-race">JAPANESE GP</span>
+            <span class="result-position">P1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-image-container">
+        <img src="/images/action-racing.png" alt="Racing Action" class="action-image" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Off Track Section -->
+  <section class="section off-track">
+    <div class="container">
+      <h2 class="section-title">OFF TRACK</h2>
+      
+      <div class="off-track-grid">
+        <div class="off-track-card">
+          <img src="/images/lifestyle-offtrack.png" alt="Lifestyle" class="off-track-image" />
+          <div class="off-track-content">
+            <h3 class="off-track-title">LIFESTYLE & CULTURE</h3>
+            <p class="off-track-description">Beyond the track, exploring fashion, technology, and creative pursuits.</p>
+          </div>
+        </div>
+        
+        <div class="off-track-card">
+          <div class="off-track-content-full">
+            <h3 class="off-track-title">STREAMING & GAMING</h3>
+            <p class="off-track-description">Connecting with fans through gaming streams and digital content creation.</p>
+            <div class="off-track-stat">500K+ FOLLOWERS</div>
+          </div>
+        </div>
+        
+        <div class="off-track-card">
+          <div class="off-track-content-full">
+            <h3 class="off-track-title">PARTNERSHIPS</h3>
+            <p class="off-track-description">Collaborating with world-class brands on innovative campaigns.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Helmets Hall of Fame -->
+  <section class="section helmets">
+    <div class="container">
+      <h2 class="section-title">HELMETS HALL OF FAME</h2>
+      
+      <div class="helmets-grid">
+        <div class="helmet-item" data-year="2025">
+          <div class="helmet-3d" data-helmet="2025"></div>
+          <img src="/images/helmet-2025.png" alt="2025 Helmet" class="helmet-image" />
+          <div class="helmet-year">2025</div>
+        </div>
+        
+        <div class="helmet-item" data-year="2024">
+          <div class="helmet-3d" data-helmet="2024"></div>
+          <img src="/images/helmet-2024.png" alt="2024 Helmet" class="helmet-image" />
+          <div class="helmet-year">2024</div>
+        </div>
+        
+        <div class="helmet-item" data-year="2023">
+          <div class="helmet-3d" data-helmet="2023"></div>
+          <img src="/images/helmet-2023.png" alt="2023 Helmet" class="helmet-image" />
+          <div class="helmet-year">2023</div>
+        </div>
+        
+        <div class="helmet-item" data-year="2022">
+          <div class="helmet-3d" data-helmet="2022"></div>
+          <img src="/images/helmet-2022.png" alt="2022 Helmet" class="helmet-image" />
+          <div class="helmet-year">2022</div>
+        </div>
+        
+        <div class="helmet-item" data-year="2021">
+          <div class="helmet-3d" data-helmet="2021"></div>
+          <img src="/images/helmet-2021.png" alt="2021 Helmet" class="helmet-image" />
+          <div class="helmet-year">2021</div>
+        </div>
+        
+        <div class="helmet-item" data-year="2020">
+          <div class="helmet-3d" data-helmet="2020"></div>
+          <img src="/images/helmet-2020.png" alt="2020 Helmet" class="helmet-image" />
+          <div class="helmet-year">2020</div>
+        </div>
+        
+        <div class="helmet-item" data-year="2019">
+          <div class="helmet-3d" data-helmet="2019"></div>
+          <img src="/images/helmet-2019.png" alt="2019 Helmet" class="helmet-image" />
+          <div class="helmet-year">2019</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners Section -->
+  <section class="section partners">
+    <div class="container">
+      <h2 class="section-title">PARTNERS</h2>
+      
+      <div class="partners-grid">
+        <div class="partner-logo">MCLAREN</div>
+        <div class="partner-logo">BELL HELMETS</div>
+        <div class="partner-logo">ALPINESTARS</div>
+        <div class="partner-logo">OAKLEY</div>
+        <div class="partner-logo">RICHARD MILLE</div>
+        <div class="partner-logo">CISCO</div>
+        <div class="partner-logo">GOOGLE</div>
+        <div class="partner-logo">QUADRANT</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Feed Section -->
+  <section class="section social">
+    <div class="container">
+      <h2 class="section-title">WHAT'S UP ON SOCIALS</h2>
+      
+      <div class="social-grid">
+        <div class="social-post">
+          <div class="social-platform">INSTAGRAM</div>
+          <div class="social-content">
+            <p>"Race week vibes 🏁 Ready to push for the win"</p>
+          </div>
+          <div class="social-meta">2 hours ago • 438K likes</div>
+        </div>
+        
+        <div class="social-post">
+          <div class="social-platform">TWITTER</div>
+          <div class="social-content">
+            <p>"P1 in qualifying! Let's go team 💪 #AusGP"</p>
+          </div>
+          <div class="social-meta">5 hours ago • 89K likes</div>
+        </div>
+        
+        <div class="social-post">
+          <div class="social-platform">YOUTUBE</div>
+          <div class="social-content">
+            <p>"NEW VIDEO: Behind the scenes at McLaren HQ"</p>
+          </div>
+          <div class="social-meta">1 day ago • 654K views</div>
+        </div>
+        
+        <div class="social-post">
+          <div class="social-platform">TWITCH</div>
+          <div class="social-content">
+            <p>"LIVE NOW: F1 2024 with the team"</p>
+          </div>
+          <div class="social-meta">Yesterday • 23K viewers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4 class="footer-title">NAVIGATION</h4>
+          <ul class="footer-links">
+            <li><a href="#on-track">On Track</a></li>
+            <li><a href="#off-track">Off Track</a></li>
+            <li><a href="#helmets">Helmets</a></li>
+            <li><a href="#partners">Partners</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4 class="footer-title">BUSINESS</h4>
+          <ul class="footer-links">
+            <li><a href="#">Management</a></li>
+            <li><a href="#">Press Kit</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4 class="footer-title">FOLLOW</h4>
+          <ul class="footer-social">
+            <li><a href="#" class="social-link">INSTAGRAM</a></li>
+            <li><a href="#" class="social-link">TWITTER</a></li>
+            <li><a href="#" class="social-link">YOUTUBE</a></li>
+            <li><a href="#" class="social-link">TWITCH</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Lando Norris. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
